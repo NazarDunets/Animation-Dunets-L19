@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RecyclerTransition-Dunets-L19</string>
+
+    <string name="details_age">%d y.o.</string>
+
+    <string name="icon_transition">icon_transition</string>
+    <string name="name_transition">name_transition</string>
+    <string name="container_transition">container_transition</string>
+</resources>
