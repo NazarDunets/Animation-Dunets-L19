@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.recyclertransition_dunets_l19.databinding.DoggoRecyclerItemBinding
 
-class DoggoRecyclerAdapter(private val mOnDoggoListener: OnDoggoListener) :
+class DoggoRecyclerAdapter(private val bloc: (TextView, ImageView, Doggo) -> Unit) :
     RecyclerView.Adapter<DoggoRecyclerAdapter.DoggoViewHolder>() {
 
     private var items: List<Doggo> = emptyList()
@@ -23,7 +23,7 @@ class DoggoRecyclerAdapter(private val mOnDoggoListener: OnDoggoListener) :
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.doggo_recycler_item, parent, false)
 
-        return DoggoViewHolder(view, mOnDoggoListener)
+        return DoggoViewHolder(view, bloc)
     }
 
     override fun onBindViewHolder(holder: DoggoViewHolder, position: Int) {
@@ -32,30 +32,23 @@ class DoggoRecyclerAdapter(private val mOnDoggoListener: OnDoggoListener) :
 
     override fun getItemCount(): Int = items.size
 
-    class DoggoViewHolder(itemView: View, private val onDoggoListener: OnDoggoListener) :
-        RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    class DoggoViewHolder(itemView: View, private val bloc: (TextView, ImageView, Doggo) -> Unit) :
+        RecyclerView.ViewHolder(itemView) {
 
         private val binding = DoggoRecyclerItemBinding.bind(itemView)
-        private lateinit var doggo: Doggo
 
         fun bind(newDoggo: Doggo) {
-            doggo = newDoggo
-            binding.tvDoggoName.text = doggo.name
+            binding.tvDoggoName.text = newDoggo.name
             Glide.with(itemView)
-                .load(doggo.imgId)
+                .load(newDoggo.imgId)
                 .centerCrop()
                 .into(binding.ivDoggoIcon)
 
-            itemView.setOnClickListener(this)
+            itemView.setOnClickListener {
+                bloc(binding.tvDoggoName, binding.ivDoggoIcon, newDoggo)
+            }
         }
 
-        override fun onClick(v: View?) {
-            onDoggoListener.onDoggoClick(binding.tvDoggoName, binding.ivDoggoIcon, doggo)
-        }
-    }
-
-    interface OnDoggoListener {
-        fun onDoggoClick(tvName: TextView, ivIcon: ImageView, doggo: Doggo)
     }
 
 }

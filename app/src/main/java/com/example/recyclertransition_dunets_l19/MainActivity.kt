@@ -4,8 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.util.toAndroidPair
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -13,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.recyclertransition_dunets_l19.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), DoggoRecyclerAdapter.OnDoggoListener {
+class MainActivity : AppCompatActivity() {
 
     companion object {
         val dogsList = listOf(
@@ -39,7 +37,22 @@ class MainActivity : AppCompatActivity(), DoggoRecyclerAdapter.OnDoggoListener {
     }
 
     private fun setupRecycler() {
-        doggoAdapter = DoggoRecyclerAdapter(this).apply { setItems(dogsList) }
+        doggoAdapter = DoggoRecyclerAdapter { tvName, ivIcon, doggo ->
+
+            val intent = Intent(this, DetailsActivity::class.java).apply {
+                putExtra(DOGGO_INFO_TAG, doggo)
+            }
+            val pairImage =
+                Pair<View, String>(ivIcon, getString(R.string.icon_transition)).toAndroidPair()
+            val pairName =
+                Pair<View, String>(tvName, getString(R.string.name_transition)).toAndroidPair()
+
+            val activityOptions = ActivityOptions
+                .makeSceneTransitionAnimation(this, pairImage, pairName)
+
+            startActivity(intent, activityOptions.toBundle())
+        }
+        doggoAdapter.setItems(dogsList)
 
         binding.rvMain.apply {
             adapter = doggoAdapter
@@ -60,18 +73,4 @@ class MainActivity : AppCompatActivity(), DoggoRecyclerAdapter.OnDoggoListener {
         setContentView(binding.root)
     }
 
-    override fun onDoggoClick(tvName: TextView, ivIcon: ImageView, doggo: Doggo) {
-        val intent = Intent(this, DetailsActivity::class.java).apply {
-            putExtra(DOGGO_INFO_TAG, doggo)
-        }
-        val pairImage =
-            Pair<View, String>(ivIcon, getString(R.string.icon_transition)).toAndroidPair()
-        val pairName =
-            Pair<View, String>(tvName, getString(R.string.name_transition)).toAndroidPair()
-
-        val activityOptions = ActivityOptions
-            .makeSceneTransitionAnimation(this, pairImage, pairName)
-
-        startActivity(intent, activityOptions.toBundle())
-    }
 }
